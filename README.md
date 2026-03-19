@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SparrRep (Prepitch)
 
-## Getting Started
+> AI sparring partner for B2B sales reps. Practice tomorrow's call today.
 
-First, run the development server:
+## What it does
+
+Build a simulation of your specific upcoming prospect from your call notes, then practice the conversation. Get scored on discovery, objection handling, urgency, and next steps.
+
+## Stack
+
+- **Framework**: Next.js 15 (App Router)
+- **UI**: shadcn/ui + Tailwind CSS
+- **Auth**: NextAuth.js v5 (credentials + Google OAuth)
+- **Database**: Prisma + PostgreSQL (shared instance)
+- **Payments**: Stripe (test mode)
+- **AI**: OpenAI GPT-4o-mini for buyer simulation + scoring
+- **Animations**: Framer Motion
+
+## Pages
+
+| Route | Description |
+|-------|-------------|
+| `/` | Landing page (10 sections) |
+| `/about` | About + mission |
+| `/pricing` | Pricing plans |
+| `/contact` | Contact form |
+| `/privacy` | Privacy policy |
+| `/terms` | Terms of service |
+| `/login` | Sign in |
+| `/signup` | Create account |
+| `/dashboard` | Session history + CTA |
+| `/session/new` | Persona builder (60-second setup) |
+| `/session/[id]` | Live sparring session |
+| `/scorecard/[id]` | Post-session scoring breakdown |
+| `/deck` | Interactive pitch deck |
+| `/docs` | Documentation hub |
+| `/api/health` | Health check endpoint |
+
+## Setup
 
 ```bash
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env.local
+# Edit .env.local with your credentials
+
+# Generate Prisma client
+npx prisma generate
+
+# Create DB (on shared Postgres)
+ssh ash-server "sudo docker exec k80c0s08c84kgcs44kckcos0 psql -U postgres -c 'CREATE DATABASE sparrep;'"
+
+# Push schema
+npx prisma db push
+
+# Run dev server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Environment Variables
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+See `.env.example` for all required variables.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Key ones:
+- `DATABASE_URL` — shared Postgres connection string
+- `AUTH_SECRET` — generated with `openssl rand -base64 32`
+- `OPENAI_API_KEY` — GPT-4o-mini for buyer simulation
+- `STRIPE_SECRET_KEY` — test mode keys
 
-## Learn More
+## Deploy
 
-To learn more about Next.js, take a look at the following resources:
+See `~/clawd/areas/infrastructure/deployment-rules.md`. Deploy via Coolify to `sparrep.ashketing.com`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+# Push to GitHub
+gh repo create ashtalksai/sparrep --public --source=. --push
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Then deploy via Coolify
+# Set Dockerfile build pack (NOT Nixpacks)
+# Set memory limit: 256MB
+# Set subdomain: sparrep.ashketing.com
+```
 
-## Deploy on Vercel
+## Business Model
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Free**: 3 sessions/month
+- **Pro**: $49/user/month — unlimited sessions + full scoring
+- **Team**: Custom — manager dashboard + team analytics
